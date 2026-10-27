@@ -576,8 +576,9 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(function()
 /* ---------- motion: a picture made of code characters behind the page ---------- */
 /* The hero shows the two hands from Michelangelo's Creation of Adam. Scrolling flies into the gap between the
    fingers; when they touch, the hands break into red sparks, a rain of code passes and a kneeling knight decodes
-   out of it; then his picture turns a full circle while the camera pulls back to show the whole field of roses. Both scenes are small 3D models drawn one
-   character cell at a time on the GPU; the cursor or a finger flips the colors of the cells under it. */
+   out of it; then the camera slowly pushes in from the whole field of roses to his helmet. The hands are a small 3D model and
+   the knight a prepared picture, both drawn one character cell at a time on the GPU; the cursor or a finger flips
+   the colors of the cells under it. */
 var reduceMotion = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 var ribbon = null, ribbonHalf = 0, ribbonPos = 0, ribbonSkew = 0, ringEl = null, ringP = -1, interEl = null;
 function motionBind(){
@@ -853,12 +854,12 @@ var art = (function(){
     var hd0 = Math.max(2.6 * 1.8 / aspect, 2.35 * 1.8), hd = hd0 * Math.pow(.07, ease(s.a));
     var hy = hd * .3 * (1 - ease(s.a));
     var gap = .16 * (1 - ease(s.touch)) + .012 + (reduceMotion ? 0 : Math.sin(t * .9) * .008 * (1 - s.touch));
-    // knight camera: close on his helmet first, then one full turn while pulling back to the whole picture
+    // knight camera: the whole picture first, then a slow push in to his helmet by the end of the page
     var kz = ease(s.kz);
-    var kFull = Math.max(1.05 * 1.8, KA * 1.04 * 1.8 / aspect), kNear = kFull * .42;
-    var kd = kNear * Math.pow(kFull * 1.1 / kNear, kz) * (1.12 - .12 * ease(s.k));
-    var kx = -.05 * (1 - kz), ky = .32 * (1 - kz);
-    var yaw = Math.PI * 2 * kz + look[0] * .16;
+    var kFull = Math.max(1.05 * 1.8, KA * 1.04 * 1.8 / aspect), kNear = kFull * .3;
+    var kd = kFull * Math.pow(kNear / kFull, kz) * (1.12 - .12 * ease(s.k));
+    var kx = -.04 * kz, ky = .38 * kz;
+    var yaw = 0;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, hcols, hrows);
