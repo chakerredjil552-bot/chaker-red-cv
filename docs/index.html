@@ -277,6 +277,21 @@ footer>span{background:var(--tint);border:1px solid var(--hair);border-radius:99
   }
 }
 
+/* intro: the eye of code, then two eyelids that slide apart onto the site */
+html.intro{overflow:hidden}
+html.intro-eye .bg{z-index:90}
+html.intro .rise{animation-play-state:paused}
+.lids{position:fixed;inset:0;z-index:95;pointer-events:none;opacity:0}
+.lids.show{opacity:1}
+.lid{position:absolute;left:0;right:0;height:50.5%;background:#030303;transition:transform 1s cubic-bezier(.75,0,.15,1)}
+.lid.t{top:0;box-shadow:0 1px 0 rgba(255,255,255,.95),0 0 26px 3px rgba(227,38,47,.85)}
+.lid.b{bottom:0;box-shadow:0 -1px 0 rgba(255,255,255,.95),0 0 26px 3px rgba(227,38,47,.85)}
+.lids.open .lid.t{transform:translateY(-102%)}
+.lids.open .lid.b{transform:translateY(102%)}
+.skip{position:fixed;z-index:96;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-2);background:rgba(5,5,5,.6);border:1px solid var(--stroke);border-radius:999px;padding:8px 14px;cursor:pointer;transition:opacity .4s,color .3s,border-color .3s}
+.skip:hover{color:#fff;border-color:var(--red)}
+html:not(.intro) .skip{opacity:0;pointer-events:none}
+
 @media (max-width:760px){
   .xp,.skills,.contact{grid-template-columns:1fr}
   .partners{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -304,7 +319,7 @@ try { var sl = localStorage.getItem("cr-lang"); if (LANGS.indexOf(sl) > -1) lang
 
 var T = {
   en:{nav:{home:"Home",work:"Work",videos:"Videos",studies:"Studies",contact:"Contact"},
-    years:"years old", aboutE:"About me", credit:"After Michelangelo · The Creation of Adam, c. 1512", wa:"WhatsApp me", seeWork:"See my work",
+    years:"years old", skip:"Skip intro", aboutE:"About me", credit:"After Michelangelo · The Creation of Adam, c. 1512", wa:"WhatsApp me", seeWork:"See my work",
     workE:"Experience", workT:"Where I work", partE:"Worked with", partT:"Pages and brands I’ve worked with", followers:"followers",
     vidE:"Videos", vidT:"Video ads I produced", watch:"Watch on Facebook",
     projE:"Projects", projT:"What I built", dl:"Download for Android", soon:"Download link coming soon",
@@ -314,7 +329,7 @@ var T = {
     phone:"Phone", email:"Email", whatsapp:"WhatsApp", copy:"Copy", copied:"Copied", visit:"Visit page",
     prev:"Previous", next:"Next", share:"Copy link to this page", linkCopied:"Link copied"},
   fr:{nav:{home:"Accueil",work:"Travail",videos:"Vidéos",studies:"Études",contact:"Contact"},
-    years:"ans", aboutE:"À propos", credit:"D’après Michel-Ange · La Création d’Adam, vers 1512", wa:"Écrivez-moi sur WhatsApp", seeWork:"Voir mon travail",
+    years:"ans", skip:"Passer l’intro", aboutE:"À propos", credit:"D’après Michel-Ange · La Création d’Adam, vers 1512", wa:"Écrivez-moi sur WhatsApp", seeWork:"Voir mon travail",
     workE:"Expérience", workT:"Où je travaille", partE:"Collaborations", partT:"Pages et marques avec qui j’ai travaillé", followers:"abonnés",
     vidE:"Vidéos", vidT:"Publicités vidéo que j’ai produites", watch:"Voir sur Facebook",
     projE:"Projets", projT:"Ce que j’ai créé", dl:"Télécharger pour Android", soon:"Lien de téléchargement bientôt disponible",
@@ -324,7 +339,7 @@ var T = {
     phone:"Téléphone", email:"E-mail", whatsapp:"WhatsApp", copy:"Copier", copied:"Copié", visit:"Voir la page",
     prev:"Précédent", next:"Suivant", share:"Copier le lien de cette page", linkCopied:"Lien copié"},
   ar:{nav:{home:"الرئيسية",work:"العمل",videos:"الفيديوهات",studies:"الدراسة",contact:"التواصل"},
-    years:"سنة", aboutE:"نبذة عني", credit:"عن لوحة مايكل أنجلو · خلق آدم، نحو 1512", wa:"راسلني على واتساب", seeWork:"شاهد أعمالي",
+    years:"سنة", skip:"تخطي المقدمة", aboutE:"نبذة عني", credit:"عن لوحة مايكل أنجلو · خلق آدم، نحو 1512", wa:"راسلني على واتساب", seeWork:"شاهد أعمالي",
     workE:"الخبرة", workT:"أين أعمل", partE:"تعاملت مع", partT:"صفحات وعلامات تعاملت معها", followers:"متابع",
     vidE:"الفيديوهات", vidT:"فيديوهات إعلانية من إنتاجي", watch:"شاهد على فيسبوك",
     projE:"المشاريع", projT:"ما قمت ببنائه", dl:"تحميل لأندرويد", soon:"رابط التحميل قريبا",
@@ -692,12 +707,45 @@ var art = (function(){
     " gl_FragColor=vec4(H,0.,0.,1.);\n}\n";
 
   var ASCII = "precision " + PREC + " float;\n" +
-    "uniform sampler2D uScene,uAtlas;uniform vec2 uRes,uCell,uGrid;uniform float uN,uTime,uHands,uDis,uKnight,uRain,uSpark,uVel,uCalm,uAspect,uKD,uKX,uKY,uKYaw,uKA,uKReady;uniform vec2 uHGrid,uFoot;uniform vec3 uPtr;uniform sampler2D uKT;\n" +
+    "uniform sampler2D uScene,uAtlas;uniform vec2 uRes,uCell,uGrid;uniform float uN,uTime,uHands,uDis,uKnight,uRain,uSpark,uVel,uCalm,uAspect,uKD,uKX,uKY,uKYaw,uKA,uKReady;uniform vec2 uHGrid,uFoot;uniform vec3 uPtr;uniform sampler2D uKT;uniform float uIntro,uOpen,uZoom,uPupil,uDraw,uFlat,uPL;uniform vec2 uGaze,uICell;uniform sampler2D uPhrase,uAtlasI;\n" +
     "float hash(vec2 p){p=fract(p*vec2(.1031,.1030));p+=dot(p,p.yx+33.33);return fract((p.x+p.y)*p.x);}\n" +
     "const vec3 WH=vec3(.93,.93,.93),GD=vec3(.9,.1,.14),GH=vec3(1.,.36,.36),GR=vec3(.55,.55,.55);\n" +
     "void main(){\n" +
     " vec2 px=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);\n" +
     " vec2 cell=floor(px/uCell),cuv=fract(px/uCell);\n" +
+    // the intro: an eye made of code opens, looks around, dilates as the camera flies in, then closes
+    " if(uIntro>.5){\n" +
+    "  vec2 ci=floor(px/uICell),cv=fract(px/uICell);\n" +
+    "  vec2 ctr=uRes*.5,cc=(ci+.5)*uICell;float mn=min(uRes.x,uRes.y)*.5,bs=uRes.x>uRes.y?1.:1.3;\n" +
+    "  vec2 ps=(cc-ctr)/(mn*bs);ps.y=-ps.y;\n" +
+    "  vec2 g=uGaze*.3;vec2 p=ps/uZoom+g*(1.-1./uZoom);\n" +
+    "  float Wd=uRes.x>uRes.y?1.08:.94,x=p.x/Wd,shp=max(0.,1.-x*x),fl=1.-uFlat;\n" +
+    "  float lo=-.2*pow(shp,.9)*fl,up=mix(lo,.5*pow(shp,.72)*fl,uOpen);\n" +
+    "  float ins=step(abs(x),1.)*step(lo,p.y)*step(p.y,up);\n" +
+    // every row streams text from the site, left or right at its own speed
+    "  float rs=hash(vec2(ci.y,7.)),pos=ci.x+floor(uTime*(5.+rs*16.))*(rs>.5?1.:-1.);\n" +
+    "  float ph=floor(texture2D(uPhrase,vec2((mod(pos,uPL)+.5)/uPL,.5)).r*255.+.5);\n" +
+    "  float lum=0.,idx=-1.;vec3 col=WH;\n" +
+    "  if(ins>.5){\n" +
+    "   float sg=hash(vec2(floor(pos/(5.+rs*9.)),ci.y));\n" +
+    "   if(sg>.25){lum=.4+.4*hash(vec2(pos,ci.y));idx=ph;}\n" +
+    "   float r=length(p-g),Ri=.3;\n" +
+    "   if(r<Ri){float an=atan(p.y-g.y,p.x-g.x);\n" +
+    "    float fb=hash(vec2(floor(an*30.),3.)),fb2=hash(vec2(floor(an*80.),floor(r*50.)));\n" +
+    "    lum=smoothstep(uPupil,uPupil+.012,r)*(.6+.3*fb+.25*fb2)*(1.-.35*smoothstep(Ri-.05,Ri,r));\n" +
+    "    lum+=(1.-smoothstep(0.,.02,abs(r-uPupil)))*.8;\n" +
+    "    col=fb2>.88?WH:(fb>.45?GH:GD);idx=-1.;}\n" +
+    "   if(length(p-g-vec2(-.085,.085))<.03){lum=1.;col=WH;idx=uN-1.;}\n" +
+    "  }\n" +
+    // the lids are bright lines of text
+    "  float lw=uICell.y*1.1/(mn*bs*uZoom);\n" +
+    "  float edge=step(abs(x),uDraw)*max(1.-smoothstep(0.,lw,abs(p.y-up)),1.-smoothstep(0.,lw,abs(p.y-lo)));\n" +
+    "  if(edge>.02){lum=max(lum,.4+.55*edge);col=mix(WH,GH,.4*edge);if(idx<0.||ins<.5)idx=ph;}\n" +
+    "  if(lum<.02&&hash(vec2(floor(pos/14.),ci.y))>.94){lum=.16;col=GD;idx=ph;}\n" +
+    "  if(idx<0.)idx=floor(clamp(lum,0.,1.)*(uN-1.)+.5);\n" +
+    "  float ea=texture2D(uAtlasI,vec2((idx+cv.x)/uN,cv.y)).r;\n" +
+    "  gl_FragColor=vec4(vec3(.012,.01,.01)+col*ea*(.3+.7*lum),1.);return;\n" +
+    " }\n" +
     " float rh=hash(vec2(cell.y,floor(uTime*14.)));\n" +
     " float sh=uCalm>.5?0.:step(.84,rh)*floor((rh-.84)*90.*uVel);\n" +
     " vec2 sc=vec2(cell.x+sh,cell.y);\n" +
@@ -772,12 +820,13 @@ var art = (function(){
   catch (e){ if (window.console) console.warn("background off:", e.message); cv.remove(); return null; }
   function locs(p, names){ var o = {}; names.forEach(function(n){ o[n] = gl.getUniformLocation(p, n); }); return o; }
   var U1 = locs(P1, ["uGrid", "uAspect", "uTime", "uGap", "uHD", "uHY", "uOn"]);
-  var U2 = locs(P2, ["uScene", "uAtlas", "uRes", "uCell", "uGrid", "uN", "uTime", "uHands", "uDis", "uKnight", "uRain", "uSpark", "uVel", "uCalm", "uAspect", "uKD", "uKX", "uKY", "uKYaw", "uKA", "uKReady", "uHGrid", "uFoot", "uPtr", "uKT"]);
+  var U2 = locs(P2, ["uScene", "uAtlas", "uRes", "uCell", "uGrid", "uN", "uTime", "uHands", "uDis", "uKnight", "uRain", "uSpark", "uVel", "uCalm", "uAspect", "uKD", "uKX", "uKY", "uKYaw", "uKA", "uKReady", "uHGrid", "uFoot", "uPtr", "uKT", "uIntro", "uOpen", "uZoom", "uPupil", "uDraw", "uFlat", "uPL", "uGaze", "uPhrase", "uICell", "uAtlasI"]);
   var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   function tex(){ var t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; }
-  var sceneTex = tex(), atlasTex = tex(), fbo = gl.createFramebuffer();
+  var sceneTex = tex(), atlasTex = tex(), atlasITex = tex(), icw = 6, ich = 10, phraseTex = tex(), fbo = gl.createFramebuffer(), PL = 1;
+  var PHRASE = "CHAKER REDJIL // QHSE ENGINEER // SCHOOL DIRECTOR // DIGITAL MARKETER // AI VIDEO ADS // BUSHRA'S SCHOOL // KHENCHELA // ";
   // the knight picture: a prepared map (red channel = brightness, green = red accents), sampled with four taps per cell
   var knightTex = tex(), knightReady = 0, KA = 540 / 760;
   (function(){
@@ -796,7 +845,7 @@ var art = (function(){
   })();
 
   // glyph atlas: code characters sorted from lightest to densest ink
-  var CH = " .'`,:;-_~^\"+=<>!*/\\|()[]{}?ilt1jrfcxzn7vJLCYTuo0Z3524OQXmwqpdbkhaUN#MW&8%B@$";
+  var CH = " .'`,:;-_~^\"+=<>!*/\\|()[]{}?ilt1jrfcxzn7vJLCYTuo0Z3524OQXmwqpdbkhaUN#MW&8%B@$ADEGHIKPRSV";
   var glyphs = [], special = [0, 0, 0, 0], N = 0, cw = 0, chh = 0;
   function atlas(){
     var m = document.createElement("canvas"), x = m.getContext("2d");
@@ -818,6 +867,19 @@ var art = (function(){
     gl.bindTexture(gl.TEXTURE_2D, atlasTex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, A);
+    // a second atlas at a readable size for the intro's eye
+    icw = Math.max(cw, Math.round(6 * dpr)); ich = Math.round(icw * 1.75);
+    var B = document.createElement("canvas"), bx = B.getContext("2d");
+    B.width = icw * N; B.height = ich;
+    bx.fillStyle = "#000"; bx.fillRect(0, 0, B.width, B.height); bx.fillStyle = "#fff"; bx.font = "700 " + Math.round(ich * .78) + "px 'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"; bx.textAlign = "center"; bx.textBaseline = "middle";
+    glyphs.forEach(function(c, i){ bx.fillText(c, i * icw + icw / 2, ich * .54); });
+    gl.bindTexture(gl.TEXTURE_2D, atlasITex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, B);
+    var ph = new Uint8Array(PHRASE.length * 4);
+    PHRASE.split("").forEach(function(c, i){ var k = glyphs.indexOf(c); ph[i * 4] = k < 0 ? 0 : k; ph[i * 4 + 3] = 255; });
+    PL = PHRASE.length;
+    gl.bindTexture(gl.TEXTURE_2D, phraseTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, PL, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, ph);
   }
 
   var W = 0, H = 0, dpr = 1, cols = 0, rows = 0, hcols = 0, hrows = 0, cellCss = 0, lite = 0;
@@ -846,10 +908,10 @@ var art = (function(){
 
   // s: the scroll story, all 0..1 — a: fly into the hands, touch: the moment the fingers meet,
   // dis: hands break apart, rain: code rain, k: the knight decodes, kz: the camera closes in on him
-  function draw(s, now, ptr, look, vel){
+  function draw(s, now, ptr, look, vel, iv){
     if (cv.clientWidth !== W || cv.clientHeight !== H){ if (!resize()) return; }
     var t = now / 1000, aspect = (cols * cw) / (rows * chh);
-    var showH = s.dis < 1, showK = s.k > 0;
+    var eye = !!(iv && iv.on), showH = !eye && s.dis < 1, showK = !eye && s.k > 0;
     // hands camera: wide enough to show both hands, then a long push into the gap
     var hd0 = Math.max(2.6 * 1.8 / aspect, 2.35 * 1.8), hd = hd0 * Math.pow(.07, ease(s.a));
     var hy = hd * .3 * (1 - ease(s.a));
@@ -861,6 +923,7 @@ var art = (function(){
     var kx = -.04 * kz, ky = .38 * kz;
     var yaw = 0;
 
+    if (!eye){
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.viewport(0, 0, hcols, hrows);
     gl.useProgram(P1);
@@ -869,6 +932,7 @@ var art = (function(){
 
     gl.uniform2f(U1.uOn, showH ? 1 : 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, cv.width, cv.height);
@@ -885,6 +949,14 @@ var art = (function(){
     gl.uniform1f(U2.uKD, kd); gl.uniform1f(U2.uKX, kx); gl.uniform1f(U2.uKY, ky); gl.uniform1f(U2.uKYaw, yaw); gl.uniform1f(U2.uKA, KA); gl.uniform1f(U2.uKReady, knightReady);
     gl.uniform2f(U2.uFoot, cw / (cardPx * KA), chh / cardPx);
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, knightTex); gl.uniform1i(U2.uKT, 2);
+    gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, phraseTex); gl.uniform1i(U2.uPhrase, 3);
+    gl.uniform1f(U2.uIntro, eye ? 1 : 0); gl.uniform1f(U2.uPL, PL);
+    if (eye){
+      gl.uniform1f(U2.uOpen, iv.open); gl.uniform1f(U2.uZoom, iv.zoom); gl.uniform1f(U2.uPupil, iv.pupil);
+      gl.uniform1f(U2.uDraw, iv.draw); gl.uniform1f(U2.uFlat, iv.flat); gl.uniform2f(U2.uGaze, iv.gx, iv.gy);
+      gl.uniform2f(U2.uICell, icw, ich);
+      gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D, atlasITex); gl.uniform1i(U2.uAtlasI, 4);
+    }
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   return {
@@ -919,6 +991,60 @@ window.addEventListener("touchmove", function(e){ if (e.touches[0]) ptrMove(e.to
 document.addEventListener("mouseleave", function(){ ptrOn = false; });
 window.addEventListener("touchend", function(){ ptrOn = false; }, {passive:true});
 
+/* intro: line appears, eye opens, looks left and right, the camera flies into the pupil, the eye closes,
+   then two black eyelids slide apart onto the site. Any tap, key, wheel or the Skip button jumps to the closing. */
+var introOn = false, introT0 = 0, introSkip = false, introPhase = 0, lidsEl = null, skipEl = null;
+var IT = {draw:.7, open:1.6, look:3.2, zoom:4.8, close:5.35};
+var GAZE = [[0, 0, 0], [.2, -.75, .06], [.45, -.75, .06], [.58, .72, -.04], [.82, .72, -.04], [1, 0, 0]];
+function introSetup(){
+  if (reduceMotion || !art || location.hash === "#edit") return;
+  introOn = true;
+  document.documentElement.classList.add("intro", "intro-eye");
+  try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+  window.scrollTo(0, 0);
+  lidsEl = document.createElement("div"); lidsEl.className = "lids"; lidsEl.setAttribute("aria-hidden", "true");
+  lidsEl.innerHTML = '<i class="lid t"></i><i class="lid b"></i>';
+  document.body.appendChild(lidsEl);
+  skipEl = document.createElement("button"); skipEl.type = "button"; skipEl.className = "skip";
+  skipEl.textContent = (T[lang] && T[lang].skip) || "Skip intro";
+  document.body.appendChild(skipEl);
+  var skip = function(){ if (introOn && introPhase === 0) introSkip = true; };
+  ["keydown", "wheel", "touchstart", "pointerdown"].forEach(function(t){ window.addEventListener(t, skip, {passive:true}); });
+}
+function introState(now){
+  if (!introOn || introPhase > 0) return null;
+  if (!introT0) introT0 = now;
+  var t = (now - introT0) / 1000;
+  if (introSkip){ introSkip = false; if (t < IT.zoom){ introT0 = now - IT.zoom * 1000; t = IT.zoom; } }
+  var c = function(v, a, b){ return Math.min(1, Math.max(0, (v - a) / (b - a))); };
+  var e = function(v){ return v * v * (3 - 2 * v); };
+  var lt = c(t, IT.open, IT.look), gx = 0, gy = 0;
+  for (var i = 1; i < GAZE.length; i++){
+    if (lt <= GAZE[i][0]){ var a = GAZE[i - 1], b = GAZE[i], k = e(c(lt, a[0], b[0])); gx = a[1] + (b[1] - a[1]) * k; gy = a[2] + (b[2] - a[2]) * k; break; }
+  }
+  var zk = e(c(t, IT.look, IT.zoom));
+  return {
+    on: t < IT.close,
+    draw: e(c(t, .1, IT.draw)),
+    open: Math.max(0, e(c(t, IT.draw, IT.open)) - e(c(t, IT.zoom, IT.close - .1))),
+    flat: e(c(t, IT.zoom + .2, IT.close)),
+    zoom: 1 + 2.5 * zk,
+    pupil: .1 + .1 * zk + .006 * Math.sin(t * 5),
+    gx: gx * (1 - zk), gy: gy * (1 - zk)
+  };
+}
+function introLids(){
+  introPhase = 1;
+  document.documentElement.classList.remove("intro-eye");
+  lidsEl.classList.add("show");
+  setTimeout(function(){ lidsEl.classList.add("open"); }, 40);
+  setTimeout(function(){
+    introOn = false;
+    document.documentElement.classList.remove("intro");
+    if (lidsEl) lidsEl.remove(); if (skipEl) skipEl.remove();
+  }, 1150);
+}
+
 // draws every frame while something moves, 30 fps while the page rests; steps down to a lighter mode if frames run slow
 var lastT = 0, lastY = -1, vel = 0, drawnAt = 0, frameAvg = 16, frameCount = 0;
 function tick(now){
@@ -938,9 +1064,11 @@ function tick(now){
     }
     var tx = ptrOn ? (ptrX / window.innerWidth - .5) * 2 : 0, ty = ptrOn ? (.5 - ptrY / vh) * 2 : 0;
     lookX += (tx - lookX) * .06; lookY += (ty - lookY) * .06;
-    var busy = Math.abs(dy) > .5 || ptrR > 1 || Math.abs(vel) > .5;
+    var iv = introState(now);
+    if (iv && !iv.on && introPhase === 0) introLids();
+    var busy = Math.abs(dy) > .5 || ptrR > 1 || Math.abs(vel) > .5 || introOn;
     if (reduceMotion || now - drawnAt >= (busy ? 14 : 30)){
-      art.draw(story(y, vh), now, [ptrX, ptrY, ptrR], [lookX, lookY], vel / 60);
+      art.draw(story(y, vh), now, [ptrX, ptrY, ptrR], [lookX, lookY], vel / 60, iv);
       drawnAt = now;
     }
   }
@@ -954,6 +1082,7 @@ function tick(now){
   }
   if (!reduceMotion) requestAnimationFrame(tick);
 }
+introSetup();
 if (reduceMotion){
   var tickQueued = false;
   var tickOnce = function(){ if (tickQueued) return; tickQueued = true; requestAnimationFrame(function(n){ tickQueued = false; tick(n); }); };
