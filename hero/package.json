@@ -1,0 +1,21 @@
+{
+  "name": "chaker-deal-hero",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/pose.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "framer-motion": "11.18.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "esbuild": "0.25.5",
+    "typescript": "5.8.3"
+  }
+}
